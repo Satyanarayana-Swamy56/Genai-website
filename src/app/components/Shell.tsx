@@ -4,15 +4,23 @@ import { Link, NavLink, Outlet } from 'react-router'
 import { BRAND } from '../../shared/types'
 import { useMe } from '../lib/api'
 import { cx } from '../lib/cx'
+import { IS_STATIC } from '../lib/mode'
 import { Avatar } from './ui'
 
+// The static build has no server, so the flashcard decks, progress history and
+// account settings (all API-backed) are left out and the plan lives in the
+// browser instead.
 const NAV = [
   { to: '/roadmap', label: 'Roadmap' },
   { to: '/videos', label: 'Videos' },
   { to: '/practice', label: 'Practice' },
   { to: '/todo', label: 'To-do' },
-  { to: '/decks', label: 'Decks' },
-  { to: '/stats', label: 'Progress' },
+  ...(IS_STATIC
+    ? []
+    : [
+        { to: '/decks', label: 'Decks' },
+        { to: '/stats', label: 'Progress' },
+      ]),
 ]
 
 const MOBILE_NAV = NAV.filter((item) => item.to !== '/decks')
@@ -57,9 +65,11 @@ export function Shell() {
                 {me.streak}
               </Link>
             )}
-            <NavLink to="/settings" className="grid size-9 place-items-center rounded-full">
-              {me && <Avatar name={me.user.name ?? me.user.email ?? 'You'} hue={250} src={me.user.picture} size={32} />}
-            </NavLink>
+            {!IS_STATIC && (
+              <NavLink to="/settings" className="grid size-9 place-items-center rounded-full">
+                {me && <Avatar name={me.user.name ?? me.user.email ?? 'You'} hue={250} src={me.user.picture} size={32} />}
+              </NavLink>
+            )}
           </div>
         </div>
       </header>

@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 
 import { Card, LevelBadge } from '../components/ui'
 import { usePractice, useTodos } from '../lib/api'
+import { IS_STATIC } from '../lib/mode'
 import { CURRICULUM_STATS, LEARNING_OUTCOMES, RESOURCES, STAGES } from '../../shared/curriculum'
 
 const OUTCOME_ICONS = { book: BookOpen, hammer: Hammer, sliders: Sliders, wand: Sparkles, database: Database, bot: Bot, chart: TrendingUp, gauge: Gauge }
@@ -161,7 +162,9 @@ export function Home() {
 
         <div>
           <h2 className="text-[19px] font-semibold tracking-[-0.02em]">Your plan</h2>
-          <p className="mt-0.5 text-[13.5px] text-muted">Saved to your account, so it survives a refresh.</p>
+          <p className="mt-0.5 text-[13.5px] text-muted">
+            {IS_STATIC ? 'Saved in this browser, so it survives a refresh.' : 'Saved to your account, so it survives a refresh.'}
+          </p>
           <div className="mt-4 grid gap-3">
             <Card className="p-4">
               <div className="flex items-center justify-between">
@@ -187,16 +190,18 @@ export function Home() {
               <Meter value={mastered} total={CURRICULUM_STATS.practice} />
               <p className="mt-2 text-[12px] text-faint">{attempted} in review · {mastered} mastered</p>
             </Card>
-            <Card className="flex items-center justify-between p-4">
-              <div>
-                <p className="text-[13.5px] font-semibold">Flashcard decks</p>
-                <p className="mt-0.5 text-[12px] text-faint">Spaced repetition for the vocabulary</p>
-              </div>
-              <Link to="/decks" className="inline-flex h-8 items-center gap-1 rounded-tile bg-surface-2 px-3 text-[13px] font-medium hover:bg-raised">
-                Open
-                <ArrowRight className="size-3.5" />
-              </Link>
-            </Card>
+            {!IS_STATIC && (
+              <Card className="flex items-center justify-between p-4">
+                <div>
+                  <p className="text-[13.5px] font-semibold">Flashcard decks</p>
+                  <p className="mt-0.5 text-[12px] text-faint">Spaced repetition for the vocabulary</p>
+                </div>
+                <Link to="/decks" className="inline-flex h-8 items-center gap-1 rounded-tile bg-surface-2 px-3 text-[13px] font-medium hover:bg-raised">
+                  Open
+                  <ArrowRight className="size-3.5" />
+                </Link>
+              </Card>
+            )}
           </div>
         </div>
       </section>

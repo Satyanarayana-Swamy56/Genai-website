@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import type { Card, Deck, Me, PracticeAttempt, Session, SessionResult, Stats, StudyMode, Todo } from '../../shared/types'
+import { localRequest } from './local'
+import { IS_STATIC } from './mode'
 
 export class ApiError extends Error {
   constructor(
@@ -13,6 +15,14 @@ export class ApiError extends Error {
 }
 
 export async function api<T>(path: string, init?: RequestInit & { json?: unknown }): Promise<T> {
+  if (IS_STATIC) {
+    try {
+      return await localRequest<T>(path, init)
+    } catch (error) {
+      const status = (error as { status?: number }).status ?? 500
+      throw new ApiError(status, (error as Error).message)
+    }
+  }
   const { json, ...rest } = init ?? {}
   const response = await fetch(`/api${path}`, {
     credentials: 'same-origin',
